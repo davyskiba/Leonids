@@ -59,7 +59,7 @@ public class Particle {
 
 	public void init() {
 		mScale = 1;
-		mAlpha = 255;	
+		mAlpha = 0;
 	}
 	
 	public void configure(long timeToLive, float emiterX, float emiterY) {
