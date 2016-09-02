@@ -19,7 +19,7 @@ android {
 
 def siteUrl = 'http://plattysoft.github.io/Leonids/'
 def gitUrl = 'https://github.com/plattysoft/Leonids.git'
-group = "com.plattysoft.leonids"
+group = 'com.github.davyskiba'
 version = versionName
 
 
