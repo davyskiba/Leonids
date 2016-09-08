@@ -208,4 +208,8 @@ public class ParticleSystem {
         }
     }
 
+    public void clearParticles(){
+        mParticles.addAll(mActiveParticles);
+        mActiveParticles.clear();
+    }
 }
