@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
+import java.util.List;
+
 public class Particle {
 
 	protected Bitmap mImage;
