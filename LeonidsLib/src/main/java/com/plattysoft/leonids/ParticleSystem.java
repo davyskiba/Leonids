@@ -150,7 +150,6 @@ public class ParticleSystem {
 
     private void activateParticle(long delay) {
         Particle p = mParticles.remove(0);
-        p.init();
         int particleX = mEmiterX;
         int particleY = mEmiterY;
         p.configure(mTimeToLive, particleX, particleY);
@@ -170,20 +169,17 @@ public class ParticleSystem {
 
 
     private void onUpdate(long miliseconds) {
-//		while (((mEmitingTime > 0 && miliseconds < mEmitingTime)|| mEmitingTime == -1) && // This point should emit
-//				!mParticles.isEmpty() && // We have particles in the pool
-//				mActivatedParticles < mParticlesPerMilisecond*miliseconds) { // and we are under the number of particles that should be launched
-//			// Activate a new particle
-//			activateParticle(miliseconds);
-//		}
         synchronized (mActiveParticles) {
-            for (int i = 0; i < mActiveParticles.size(); i++) {
+            int particlesSize = mActiveParticles.size();
+            for (int i = 0; i < particlesSize; i++) {
                 boolean active = mActiveParticles.get(i).update(miliseconds);
                 if (!active) {
                     Particle p = mActiveParticles.remove(i);
                     i--; // Needed to keep the index at the right position
+                    particlesSize--;
                     mParticles.add(p);
                 }
+
             }
         }
         mDrawingView.postInvalidate();
@@ -208,7 +204,7 @@ public class ParticleSystem {
         }
     }
 
-    public void clearParticles(){
+    public void clearParticles() {
         mParticles.addAll(mActiveParticles);
         mActiveParticles.clear();
     }

@@ -4,7 +4,7 @@ import com.plattysoft.leonids.Particle;
 
 public class FadeInModifier implements ParticleModifier {
 
-    private static final int MAX_ALPHA=255;
+    private static final int MAX_ALPHA = 255;
     private long fadeInDuration;
 
     public FadeInModifier(long fadeInDuration) {
@@ -13,16 +13,16 @@ public class FadeInModifier implements ParticleModifier {
 
     @Override
     public void apply(Particle particle, long miliseconds) {
-        if(miliseconds<=0){
-            particle.mAlpha=0;
+        if (miliseconds <= 0) {
+            particle.setAlpha(0);
             return;
         }
 
-        if(particle.mAlpha>=MAX_ALPHA){
+        if (particle.getAlpha() >= MAX_ALPHA) {
             return;
         }
 
-        int interpolatedAlpha= (int) (((float)miliseconds/fadeInDuration)*MAX_ALPHA);
-        particle.mAlpha= Math.min(interpolatedAlpha,MAX_ALPHA);
+        int interpolatedAlpha = (int) (((float) miliseconds / fadeInDuration) * MAX_ALPHA);
+        particle.setAlpha(Math.min(interpolatedAlpha, MAX_ALPHA));
     }
 }
