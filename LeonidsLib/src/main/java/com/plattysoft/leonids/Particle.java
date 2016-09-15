@@ -1,7 +1,5 @@
 package com.plattysoft.leonids;
 
-import java.util.List;
-
 import com.plattysoft.leonids.modifiers.ParticleModifier;
 
 import android.graphics.Bitmap;
@@ -12,65 +10,57 @@ import android.graphics.Paint;
 public class Particle {
 
 	protected Bitmap mImage;
-	
+
 	public float mCurrentX;
 	public float mCurrentY;
-	
-	public float mScale = 1f;
-	public int mAlpha = 255;
-	
-	public float mInitialRotation = 0f;
-	
-	public float mRotationSpeed = 0f;
-	
+
 	public float mSpeedX = 0f;
 	public float mSpeedY = 0f;
 
-	public float mAccelerationX;
-	public float mAccelerationY;
-
 	private Matrix mMatrix;
 	private Paint mPaint;
+	private int alpha;
 
 	private float mInitialX;
 	private float mInitialY;
-
-	private float mRotation;
 
 	private long mTimeToLive;
 
 	protected long mStartingMilisecond;
 
-	private int mBitmapHalfWidth;
-	private int mBitmapHalfHeight;
-
 	private List<ParticleModifier> mModifiers;
 
 
-	protected Particle() {		
+	protected Particle() {
 		mMatrix = new Matrix();
 		mPaint = new Paint();
+		alpha=0;
+		mPaint.setAlpha(alpha);
 	}
-	
+
 	public Particle (Bitmap bitmap) {
 		this();
 		mImage = bitmap;
 	}
 
-	public void init() {
-		mScale = 1;
-		mAlpha = 0;
+	public int getAlpha() {
+		return alpha;
 	}
-	
+
+	public void setAlpha(int alpha){
+		if(this.alpha!=alpha){
+			this.alpha=alpha;
+			mPaint.setAlpha(alpha);
+		}
+	}
+
 	public void configure(long timeToLive, float emiterX, float emiterY) {
-		mBitmapHalfWidth = mImage.getWidth()/2;
-		mBitmapHalfHeight = mImage.getHeight()/2;
-		
-		mInitialX = emiterX - mBitmapHalfWidth;
-		mInitialY = emiterY - mBitmapHalfHeight;
+
+		mInitialX = emiterX - mImage.getWidth()/2;
+		mInitialY = emiterY - mImage.getHeight()/2;
 		mCurrentX = mInitialX;
 		mCurrentY = mInitialY;
-		
+
 		mTimeToLive = timeToLive;
 	}
 
@@ -79,21 +69,17 @@ public class Particle {
 		if (realMiliseconds > mTimeToLive) {
 			return false;
 		}
-		mCurrentX = mInitialX+mSpeedX*realMiliseconds+mAccelerationX*realMiliseconds*realMiliseconds;
-		mCurrentY = mInitialY+mSpeedY*realMiliseconds+mAccelerationY*realMiliseconds*realMiliseconds;
-		mRotation = mInitialRotation + mRotationSpeed*realMiliseconds/1000;
+		mCurrentX = mInitialX+mSpeedX*realMiliseconds;
+		mCurrentY = mInitialY+mSpeedY*realMiliseconds;
+
 		for (int i=0; i<mModifiers.size(); i++) {
 			mModifiers.get(i).apply(this, realMiliseconds);
 		}
 		return true;
 	}
-	
+
 	public void draw (Canvas c) {
-		mMatrix.reset();
-		mMatrix.postRotate(mRotation, mBitmapHalfWidth, mBitmapHalfHeight);
-		mMatrix.postScale(mScale, mScale, mBitmapHalfWidth, mBitmapHalfHeight);
-		mMatrix.postTranslate(mCurrentX, mCurrentY);
-		mPaint.setAlpha(mAlpha);		
+		mMatrix.setTranslate(mCurrentX,mCurrentY);
 		c.drawBitmap(mImage, mMatrix, mPaint);
 	}
 
