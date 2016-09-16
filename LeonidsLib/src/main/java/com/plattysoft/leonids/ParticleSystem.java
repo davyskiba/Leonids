@@ -135,16 +135,18 @@ public class ParticleSystem {
     }
 
     private void activateParticle(long delay) {
-        Particle p = getNewParticle();
-        int particleX = mEmiterX;
-        int particleY = mEmiterY;
-        p.configure(mTimeToLive, particleX, particleY);
-        p.activate(delay, mModifiers);
-        p.setAlpha(particleStartingAlpha);
-        mActiveParticles.add(p);
+        synchronized (mActiveParticles) {
+            Particle p = getNewParticle();
+            int particleX = mEmiterX;
+            int particleY = mEmiterY;
+            p.configure(mTimeToLive, particleX, particleY);
+            p.activate(delay, mModifiers);
+            p.setAlpha(particleStartingAlpha);
+            mActiveParticles.add(p);
 
-        for (ParticleInitializer particleInitializer : mLateInitializers) {
-            particleInitializer.initParticle(p, mRandom);
+            for (ParticleInitializer particleInitializer : mLateInitializers) {
+                particleInitializer.initParticle(p, mRandom);
+            }
         }
     }
 
@@ -179,10 +181,12 @@ public class ParticleSystem {
     }
 
     private void cleanupAnimation() {
-        mParentView.removeView(mDrawingView);
-        mDrawingView = null;
-        mParentView.postInvalidate();
-        mParticles.addAll(mActiveParticles);
+        synchronized (mActiveParticles) {
+            mParentView.removeView(mDrawingView);
+            mDrawingView = null;
+            mParentView.postInvalidate();
+            mParticles.addAll(mActiveParticles);
+        }
     }
 
     /**
@@ -198,7 +202,9 @@ public class ParticleSystem {
     }
 
     public void clearParticles() {
-        mParticles.addAll(mActiveParticles);
-        mActiveParticles.clear();
+        synchronized (mActiveParticles) {
+            mParticles.addAll(mActiveParticles);
+            mActiveParticles.clear();
+        }
     }
 }
