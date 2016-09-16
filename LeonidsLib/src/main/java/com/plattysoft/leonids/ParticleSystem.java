@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -18,13 +19,13 @@ public class ParticleSystem {
 
     private static final long TIMMERTASK_INTERVAL = 50;
     private ViewGroup mParentView;
-    private int mMaxParticles;
     private Random mRandom;
 
     private ParticleField mDrawingView;
+    private Bitmap particleBitmap;
 
-    private ArrayList<Particle> mParticles;
-    private final ArrayList<Particle> mActiveParticles = new ArrayList<Particle>();
+    private LinkedList<Particle> mParticles;
+    private final LinkedList<Particle> mActiveParticles = new LinkedList<Particle>();
     private long mTimeToLive;
     private long mCurrentTime = 0;
 
@@ -57,7 +58,8 @@ public class ParticleSystem {
         }
     }
 
-    private ParticleSystem(int maxParticles, long timeToLive, ViewGroup parentViewGroup) {
+    public ParticleSystem(long timeToLive, ViewGroup parentViewGroup,Bitmap particleBitmap) {
+        this.particleBitmap=particleBitmap;
         mRandom = new Random();
         mParentLocation = new int[2];
 
@@ -67,27 +69,9 @@ public class ParticleSystem {
         mModifiers = new ArrayList<ParticleModifier>();
         mLateInitializers = new ArrayList<ParticleInitializer>();
 
-        mMaxParticles = maxParticles;
         // Create the particles
-
-        mParticles = new ArrayList<Particle>();
+        mParticles = new LinkedList<Particle>();
         mTimeToLive = timeToLive;
-    }
-
-    /**
-     * Utility constructor that receives a Drawable
-     *
-     * @param maxParticles    The maximum number of particles
-     * @param particleBitmap  The drawable to use as particle (supports Bitmaps and Animations)
-     * @param timeToLive      The time to live for the particles
-     * @param parentViewGroup The the parent ViewGroup of the particle system
-     */
-    public ParticleSystem(int maxParticles, Bitmap particleBitmap, long timeToLive, ViewGroup parentViewGroup) {
-        this(maxParticles, timeToLive, parentViewGroup);
-
-        for (int i = 0; i < mMaxParticles; i++) {
-            mParticles.add(new Particle(particleBitmap));
-        }
     }
 
     /**
@@ -149,7 +133,7 @@ public class ParticleSystem {
     }
 
     private void activateParticle(long delay) {
-        Particle p = mParticles.remove(0);
+        Particle p = getNewParticle();
         int particleX = mEmiterX;
         int particleY = mEmiterY;
         p.configure(mTimeToLive, particleX, particleY);
@@ -161,6 +145,12 @@ public class ParticleSystem {
         }
     }
 
+    private Particle getNewParticle() {
+        if(mParticles.isEmpty()){
+            return new Particle(particleBitmap);
+        }
+        return mParticles.removeFirst();
+    }
 
     public void emitFrom(int x, int y) {
         configureEmiter(x, y);
@@ -177,7 +167,7 @@ public class ParticleSystem {
                     Particle p = mActiveParticles.remove(i);
                     i--; // Needed to keep the index at the right position
                     particlesSize--;
-                    mParticles.add(p);
+                    mParticles.addLast(p);
                 }
 
             }

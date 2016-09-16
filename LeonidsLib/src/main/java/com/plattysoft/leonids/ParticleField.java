@@ -5,11 +5,11 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 class ParticleField extends View {
 
-	private ArrayList<Particle> mParticles;
+	private LinkedList<Particle> mParticles;
 
 	public ParticleField(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -23,7 +23,7 @@ class ParticleField extends View {
 		super(context);
 	}
 
-	public void setParticles(ArrayList<Particle> particles) {
+	public void setParticles(LinkedList<Particle> particles) {
 		mParticles = particles;
 	}
 
@@ -33,8 +33,13 @@ class ParticleField extends View {
 
 		synchronized (mParticles) {
 			for (Particle particle : mParticles) {
-				particle.draw(canvas);
+				try {
+					particle.draw(canvas);
+				} catch (NullPointerException exc) {
+					exc.printStackTrace();
+				}
 			}
 		}
+
 	}
 }
