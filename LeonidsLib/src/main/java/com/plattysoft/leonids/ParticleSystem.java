@@ -23,6 +23,7 @@ public class ParticleSystem {
 
     private ParticleField mDrawingView;
     private Bitmap particleBitmap;
+    private int particleStartingAlpha;
 
     private LinkedList<Particle> mParticles;
     private final LinkedList<Particle> mActiveParticles = new LinkedList<Particle>();
@@ -58,8 +59,9 @@ public class ParticleSystem {
         }
     }
 
-    public ParticleSystem(long timeToLive, ViewGroup parentViewGroup,Bitmap particleBitmap) {
+    public ParticleSystem(long timeToLive, ViewGroup parentViewGroup,int particleStartingAlpha, Bitmap particleBitmap) {
         this.particleBitmap=particleBitmap;
+        this.particleStartingAlpha=particleStartingAlpha;
         mRandom = new Random();
         mParentLocation = new int[2];
 
@@ -138,6 +140,7 @@ public class ParticleSystem {
         int particleY = mEmiterY;
         p.configure(mTimeToLive, particleX, particleY);
         p.activate(delay, mModifiers);
+        p.setAlpha(particleStartingAlpha);
         mActiveParticles.add(p);
 
         for (ParticleInitializer particleInitializer : mLateInitializers) {
